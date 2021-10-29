@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GreenAPI.Migrations
 {
-    public partial class Primeiro : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -32,7 +32,7 @@ namespace GreenAPI.Migrations
                 name: "Product",
                 columns: table => new
                 {
-                    ProductId = table.Column<long>(type: "bigint", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     Name = table.Column<string>(type: "longtext", nullable: false)

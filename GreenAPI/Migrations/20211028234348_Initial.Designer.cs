@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GreenAPI.Migrations
 {
     [DbContext(typeof(GreenStockContext))]
-    [Migration("20211028210313_Fun")]
-    partial class Fun
+    [Migration("20211028234348_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
