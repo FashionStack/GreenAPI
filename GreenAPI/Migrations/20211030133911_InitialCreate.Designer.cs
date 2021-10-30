@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GreenAPI.Migrations
 {
     [DbContext(typeof(GreenStockContext))]
-    [Migration("20211028210313_Fun")]
-    partial class Fun
+    [Migration("20211030133911_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,9 +43,9 @@ namespace GreenAPI.Migrations
 
             modelBuilder.Entity("GreenAPI.Models.Product", b =>
                 {
-                    b.Property<int>("ProductId")
+                    b.Property<long>("ProductId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Amount")
                         .HasColumnType("int");

@@ -19,6 +19,5 @@ namespace GreenAPI.Models
         [Required]
         [DisplayName("Status")]
         public bool Status { get; set; }
-        public List<Product> Product { get; set; }
     }
 }
