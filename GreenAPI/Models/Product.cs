@@ -11,6 +11,7 @@ namespace GreenAPI.Models
     {
         public long ProductId { get; set; }
         public Category Category { get; set; }
+        //public int CategoryId { get; set; }
        
         [Required]
         [DisplayName("Nome")]
@@ -19,13 +20,13 @@ namespace GreenAPI.Models
         [DisplayName("Tamanho")]
         public string Size { get; set; }
         [Required]
-        [DisplayName("Item N°")]
+        [DisplayName("SKU")]
         public string SKU { get; set; }
         [Required]
         [DisplayName("Código Referencia")]
         public string ReferenceCode { get; set; }
         [Required]
-        [DisplayName("Amount")]
+        [DisplayName("Quantidade")]
         public int Amount { get; set; }
         public string ImageUrl { get; set; }
     }
