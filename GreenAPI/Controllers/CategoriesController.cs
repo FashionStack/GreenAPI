@@ -7,9 +7,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GreenAPI.Context;
 using GreenAPI.Models;
+using Swashbuckle.AspNetCore;
+using System.Net;
 
 namespace GreenAPI.Controllers
 {
+    /// <summary>
+    /// Métodos relacionados à manipulação de categorias.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
@@ -21,12 +26,18 @@ namespace GreenAPI.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Buscar todas as categorias disponíveis.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
         {
             return await _context.Category.Where(x => x.Status == true).ToListAsync();
         }
 
+        /// <summary>
+        /// Buscar uma categoria baseado em seu ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
@@ -40,6 +51,9 @@ namespace GreenAPI.Controllers
             return category;
         }
 
+        /// <summary>
+        /// Incluir uma nova categoria.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
@@ -52,6 +66,9 @@ namespace GreenAPI.Controllers
             return CreatedAtAction("GetCategory", new { id = category.CategoryId }, category);
         }
 
+        /// <summary>
+        /// Deletar uma categoria.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)
         {

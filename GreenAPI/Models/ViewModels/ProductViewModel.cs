@@ -1,16 +1,14 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GreenAPI.Models
 {
-    public class Product
+    public class ProductViewModel
     {
         public long ProductId { get; set; }
-        [ForeignKey("CategoryId")]
         public Category Category { get; set; }
-        [JsonIgnore]
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Size { get; set; }
