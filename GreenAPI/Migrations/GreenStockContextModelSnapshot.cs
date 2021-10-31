@@ -80,15 +80,10 @@ namespace GreenAPI.Migrations
             modelBuilder.Entity("GreenAPI.Models.Product", b =>
                 {
                     b.HasOne("GreenAPI.Models.Category", "Category")
-                        .WithMany("Product")
+                        .WithMany()
                         .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("GreenAPI.Models.Category", b =>
-                {
-                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

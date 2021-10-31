@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GreenAPI.Migrations
 {
     [DbContext(typeof(GreenStockContext))]
-    [Migration("20211030133911_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20211030191109_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -82,15 +82,10 @@ namespace GreenAPI.Migrations
             modelBuilder.Entity("GreenAPI.Models.Product", b =>
                 {
                     b.HasOne("GreenAPI.Models.Category", "Category")
-                        .WithMany("Product")
+                        .WithMany()
                         .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("GreenAPI.Models.Category", b =>
-                {
-                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }

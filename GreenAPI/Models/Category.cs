@@ -14,10 +14,10 @@ namespace GreenAPI.Models
         [DisplayName("Nome")]
         public string Name { get; set; }
         [Required]
-        [DisplayName("Tamanho do Tipo")]
+        [DisplayName("Medida numrica ou letra ? ")]
         public char SizeType { get; set; }
         [Required]
-        [DisplayName("Status")]
+        [DisplayName("Essa roupa e sustentavel ? ")]
         public bool Status { get; set; }
     }
 }
