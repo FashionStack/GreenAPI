@@ -21,14 +21,12 @@ namespace GreenAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Categories
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
         {
-            return await _context.Category.ToListAsync();
+            return await _context.Category.Where(x => x.Status == true).ToListAsync();
         }
 
-        // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(int id)
         {
@@ -42,16 +40,23 @@ namespace GreenAPI.Controllers
             return category;
         }
 
-        // PUT: api/Categories/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        [HttpPost]
+        public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            if (id != category.CategoryId)
-            {
-                return BadRequest();
-            }
+            //Seta a categoria como ativa
+            category.Status = true;
 
+            _context.Category.Add(category);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetCategory", new { id = category.CategoryId }, category);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(int id)
+        {
+            var category = await _context.Category.FindAsync(id);
+            category.Status = false;
             _context.Entry(category).State = EntityState.Modified;
 
             try
@@ -69,33 +74,6 @@ namespace GreenAPI.Controllers
                     throw;
                 }
             }
-
-            return NoContent();
-        }
-
-        // POST: api/Categories
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
-        {
-            _context.Category.Add(category);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetCategory", new { id = category.CategoryId }, category);
-        }
-
-        // DELETE: api/Categories/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCategory(int id)
-        {
-            var category = await _context.Category.FindAsync(id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            _context.Category.Remove(category);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

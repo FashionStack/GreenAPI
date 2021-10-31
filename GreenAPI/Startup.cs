@@ -1,6 +1,10 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using GreenAPI.Context;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +16,7 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace GreenAPI
@@ -35,8 +40,11 @@ namespace GreenAPI
                 .EnableDetailedErrors()
                 );
 
-
-            services.AddControllers();
+            services.AddControllers()
+                            .AddFluentValidation(s =>
+                             {
+                                 s.RegisterValidatorsFromAssemblyContaining<Startup>();
+                             });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "GreenAPI", Version = "v1" });
