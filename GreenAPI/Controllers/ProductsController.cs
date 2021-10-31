@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GreenAPI.Context;
 using GreenAPI.Models;
+using System.Net;
 
 namespace GreenAPI.Controllers
 {
@@ -21,14 +22,12 @@ namespace GreenAPI.Controllers
             _context = context;
         }
 
-        // GET: api/CProductsontroller
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
             return await _context.Product.ToListAsync();
         }
 
-        // GET: api/CProductsontroller/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(long id)
         {
@@ -42,11 +41,21 @@ namespace GreenAPI.Controllers
             return product;
         }
 
-        // PUT: api/CProductsontroller/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(long id, Product product)
         {
+            //Valida se a categoria informada existe
+            var category = await _context.Category.FindAsync(product.CategoryId);
+
+            if (category == null || category.Status == false)
+            {
+                return NotFound(new Error
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "A categoria informada não existe."
+                }); ;
+            }
+
             if (id != product.ProductId)
             {
                 return BadRequest();
@@ -73,18 +82,27 @@ namespace GreenAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/CProductsontroller
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
+            //Valida se a categoria informada existe
+            var category = await _context.Category.FindAsync(product.CategoryId);
+
+            if (category == null || category.Status == false)
+            {
+                return NotFound(new Error
+                {
+                    StatusCode = HttpStatusCode.NotFound,
+                    Message = "A categoria informada não existe."
+                }); ;
+            }
+
             _context.Product.Add(product);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
         }
 
-        // DELETE: api/CProductsontroller/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(long id)
         {
