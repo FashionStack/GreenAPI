@@ -8,9 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using GreenAPI.Context;
 using GreenAPI.Models;
 using System.Net;
+using GreenAPI.Models.ViewModels;
 
 namespace GreenAPI.Controllers
 {
+    /// <summary>
+    /// Métodos relacionados à manipulação de produtos.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -22,16 +26,22 @@ namespace GreenAPI.Controllers
             _context = context;
         }
 
+        /// <summary>
+        /// Buscar todos os produtos.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
-            return await _context.Product.ToListAsync();
+            return await _context.Product.Include(t => t.Category).ToListAsync();
         }
 
+        /// <summary>
+        /// Buscar uma produto baseado em seu ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(long id)
         {
-            var product = await _context.Product.FindAsync(id);
+            Product product = await _context.Product.Include(t => t.Category).FirstOrDefaultAsync(i => i.ProductId == id);
 
             if (product == null)
             {
@@ -41,17 +51,20 @@ namespace GreenAPI.Controllers
             return product;
         }
 
+        /// <summary>
+        /// Editar um produto baseado em seu ID.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(long id, Product product)
         {
             //Valida se a categoria informada existe
-            var category = await _context.Category.FindAsync(product.CategoryId);
+            Category category = await _context.Category.FindAsync(product.CategoryId);
 
             if (category == null || category.Status == false)
             {
                 return NotFound(new Error
                 {
-                    StatusCode = HttpStatusCode.NotFound,
+                    Code = HttpStatusCode.NotFound,
                     Message = "A categoria informada não existe."
                 }); ;
             }
@@ -82,17 +95,20 @@ namespace GreenAPI.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Incluir um novo produto.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
             //Valida se a categoria informada existe
-            var category = await _context.Category.FindAsync(product.CategoryId);
+            Category category = await _context.Category.FindAsync(product.CategoryId);
 
             if (category == null || category.Status == false)
             {
                 return NotFound(new Error
                 {
-                    StatusCode = HttpStatusCode.NotFound,
+                    Code = HttpStatusCode.NotFound,
                     Message = "A categoria informada não existe."
                 }); ;
             }
@@ -103,10 +119,13 @@ namespace GreenAPI.Controllers
             return CreatedAtAction("GetProduct", new { id = product.ProductId }, product);
         }
 
+        /// <summary>
+        /// Deletar um produto baseado em seu ID.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(long id)
         {
-            var product = await _context.Product.FindAsync(id);
+            Product product = await _context.Product.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -116,6 +135,54 @@ namespace GreenAPI.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        /// <summary>
+        /// Obter informações do dashboard de produtos.
+        /// </summary>
+        [HttpGet("dashboard")]
+        public async Task<ActionResult<DashboardViewModel>> GetProductDashboard()
+        {
+            List<Product> products = await _context.Product.Include(t => t.Category).ToListAsync();
+
+            if (products == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var dashboard = new DashboardViewModel()
+                {
+                    ProductsCount = products.Count,
+                    StockItemsCount = products.Sum(p => p.Amount),
+                    SustainableItemsCount = products.Where(p => p.Sustainable).Sum(p => p.Amount),
+                    NonSustainableItemsCount = products.Where(p => !p.Sustainable).Sum(p => p.Amount),
+                };
+
+                var categories = new List<DashboardCategoriesCountViewModel>();
+                var groupby = products.GroupBy(i => new { i.CategoryId, i.Category.Name }).Select(i => new { CategoryId = i.Key.CategoryId, Name = i.Key.Name }).ToList();
+
+                foreach (var item in groupby)
+                {
+                    DashboardCategoriesCountViewModel category = new DashboardCategoriesCountViewModel()
+                    {
+                        Category = item.Name,
+                        SustainableItemsCount = products.Where(i => i.CategoryId == item.CategoryId && i.Sustainable == true).Sum(i => i.Amount),
+                        NonSustainableItemsCount = products.Where(i => i.CategoryId == item.CategoryId && i.Sustainable == false).Sum(i => i.Amount)
+                    };
+
+                    categories.Add(category);
+                }
+
+                dashboard.Categories = categories;
+
+                return dashboard;
+            }
+            catch 
+            {
+                return UnprocessableEntity();
+            }
         }
 
         private bool ProductExists(long id)

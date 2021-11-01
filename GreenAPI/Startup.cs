@@ -1,6 +1,8 @@
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using GreenAPI.Context;
+using GreenAPI.Models.Validators;
+using MicroElements.Swashbuckle.FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -13,10 +15,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace GreenAPI
@@ -45,10 +50,33 @@ namespace GreenAPI
                              {
                                  s.RegisterValidatorsFromAssemblyContaining<Startup>();
                              });
+
+            services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<ProductValidator>())
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<CategoryValidator>());
+
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GreenAPI", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {
+                    Title = "GreenStockAPI",
+                    Version = "v1",
+                    Description = "Documentação referente ao software de controle de estoque GreenStock." +
+                    "Desenvolvido pela equipe FashionStack." +
+                    "Tal documentação relata todos os endpoints disponíveis para consumo, bem como seus devidos retornos." +
+                    "Quaisquer dúvidas, entre em contato conosco através do GitHub.",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "FashionStack",
+                        Url = new Uri("https://github.com/FashionStack"),
+                    }
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
+
+            services.AddFluentValidationRulesToSwagger();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,9 +85,10 @@ namespace GreenAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenAPI v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenAPI v1"));
 
             app.UseHttpsRedirection();
 

@@ -9,8 +9,8 @@ namespace GreenAPI.Models
 {
     public class Error
     {
-        public string Type { get; set; }
-        public HttpStatusCode StatusCode { get; set; }
+        public string Title { get; set; }
+        public HttpStatusCode Code { get; set; }
         public string Message { get; set; }
     }
 }
