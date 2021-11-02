@@ -157,6 +157,50 @@ namespace GreenAPI.Controllers
         }
 
         /// <summary>
+        /// Adicionar ou remover o estoque de um produto baseado em seu ID.
+        /// </summary>
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
+        [HttpPut("amount")]
+        public async Task<IActionResult> PutProductStockAmount(ProductAmount value)
+        {
+            //Valida se a o produto informado existe
+            Product product = await _context.Product.FindAsync(value.ProductId);
+
+            if (product != null)
+            {
+                //Valida se o valor é negativo e se há a quantidade necessária em estoque para retirada
+                if (value.Amount < 0 && value.Amount < product.Amount)
+                {
+                    return BadRequest(new Error
+                    {
+                        Code = HttpStatusCode.BadRequest,
+                        Message = "A quantidade informada para retirada é maior que o estoque disponível."
+                    });
+                }
+                else
+                {
+                    product.Amount += value.Amount;
+                }
+
+                _context.Entry(product).State = EntityState.Modified;
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                return NotFound(new Error
+                {
+                    Code = HttpStatusCode.NotFound,
+                    Message = "O produto informado não existe."
+                });
+            }
+
+            return Ok();
+        }
+
+        /// <summary>
         /// Obter informações do dashboard de produtos.
         /// </summary>
         [ProducesResponseType(typeof(Dashboard), (int)HttpStatusCode.OK)]
@@ -164,7 +208,7 @@ namespace GreenAPI.Controllers
         [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity)]
         [HttpGet("dashboard")]
         public async Task<ActionResult<Dashboard>> GetProductDashboard()
-        
+
         {
             List<Product> products = await _context.Product.Include(t => t.Category).ToListAsync();
 
@@ -202,7 +246,7 @@ namespace GreenAPI.Controllers
 
                 return dashboard;
             }
-            catch 
+            catch
             {
                 return UnprocessableEntity();
             }
