@@ -9,6 +9,7 @@ using GreenAPI.Context;
 using GreenAPI.Models;
 using System.Net;
 using GreenAPI.Models.ViewModels;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace GreenAPI.Controllers
 {
@@ -29,23 +30,34 @@ namespace GreenAPI.Controllers
         /// <summary>
         /// Buscar todos os produtos.
         /// </summary>
+        [ProducesResponseType(typeof(List<Product>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Product>>> GetProduct()
         {
-            return await _context.Product.Include(t => t.Category).ToListAsync();
+            var products = await _context.Product.Include(t => t.Category).ToListAsync();
+
+            if (products == null)
+            {
+                return NotFound();
+            }
+
+            return products;
         }
 
         /// <summary>
         /// Buscar uma produto baseado em seu ID.
         /// </summary>
+        [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(long id)
         {
-            Product product = await _context.Product.Include(t => t.Category).FirstOrDefaultAsync(i => i.ProductId == id);
+            var product = await _context.Product.Include(t => t.Category).FirstOrDefaultAsync(i => i.ProductId == id);
 
             if (product == null)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return product;
@@ -54,6 +66,9 @@ namespace GreenAPI.Controllers
         /// <summary>
         /// Editar um produto baseado em seu ID.
         /// </summary>
+        [ProducesResponseType(typeof(Product), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutProduct(long id, Product product)
         {
@@ -98,6 +113,8 @@ namespace GreenAPI.Controllers
         /// <summary>
         /// Incluir um novo produto.
         /// </summary>
+        [ProducesResponseType(typeof(Product), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(Error), (int)HttpStatusCode.NotFound)]
         [HttpPost]
         public async Task<ActionResult<Product>> PostProduct(Product product)
         {
@@ -122,6 +139,8 @@ namespace GreenAPI.Controllers
         /// <summary>
         /// Deletar um produto baseado em seu ID.
         /// </summary>
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(long id)
         {
@@ -140,8 +159,12 @@ namespace GreenAPI.Controllers
         /// <summary>
         /// Obter informações do dashboard de produtos.
         /// </summary>
+        [ProducesResponseType(typeof(Dashboard), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.UnprocessableEntity)]
         [HttpGet("dashboard")]
-        public async Task<ActionResult<DashboardViewModel>> GetProductDashboard()
+        public async Task<ActionResult<Dashboard>> GetProductDashboard()
+        
         {
             List<Product> products = await _context.Product.Include(t => t.Category).ToListAsync();
 
@@ -152,7 +175,7 @@ namespace GreenAPI.Controllers
 
             try
             {
-                var dashboard = new DashboardViewModel()
+                var dashboard = new Dashboard()
                 {
                     ProductsCount = products.Count,
                     StockItemsCount = products.Sum(p => p.Amount),
@@ -160,12 +183,12 @@ namespace GreenAPI.Controllers
                     NonSustainableItemsCount = products.Where(p => !p.Sustainable).Sum(p => p.Amount),
                 };
 
-                var categories = new List<DashboardCategoriesCountViewModel>();
+                var categories = new List<DashboardCategoriesCount>();
                 var groupby = products.GroupBy(i => new { i.CategoryId, i.Category.Name }).Select(i => new { CategoryId = i.Key.CategoryId, Name = i.Key.Name }).ToList();
 
                 foreach (var item in groupby)
                 {
-                    DashboardCategoriesCountViewModel category = new DashboardCategoriesCountViewModel()
+                    DashboardCategoriesCount category = new DashboardCategoriesCount()
                     {
                         Category = item.Name,
                         SustainableItemsCount = products.Where(i => i.CategoryId == item.CategoryId && i.Sustainable == true).Sum(i => i.Amount),
@@ -175,7 +198,7 @@ namespace GreenAPI.Controllers
                     categories.Add(category);
                 }
 
-                dashboard.Categories = categories;
+                dashboard.Categories = categories.OrderByDescending(i => i.SustainableItemsCount).ThenBy(i => i.NonSustainableItemsCount).Take(5).ToList(); ;
 
                 return dashboard;
             }

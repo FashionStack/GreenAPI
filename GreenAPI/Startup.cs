@@ -58,12 +58,12 @@ namespace GreenAPI
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {
-                    Title = "GreenStockAPI",
+                    Title = "GreenStock API",
                     Version = "v1",
-                    Description = "Documentação referente ao software de controle de estoque GreenStock." +
-                    "Desenvolvido pela equipe FashionStack." +
-                    "Tal documentação relata todos os endpoints disponíveis para consumo, bem como seus devidos retornos." +
-                    "Quaisquer dúvidas, entre em contato conosco através do GitHub.",
+                    Description = "Documentação referente ao software de controle de estoque GreenStock.<br /><br />" +
+                    "Tal documentação relata todos os endpoints disponíveis para consumo, bem como seus devidos retornos.<br /><br />" +
+                    "Desenvolvido pela equipe FashionStack.<br /><br />" +
+                    "Quaisquer dúvidas, entre em contato conosco através do GitHub.<br /><br />",
                     Contact = new OpenApiContact
                     {
                         Name = "FashionStack",
@@ -88,7 +88,7 @@ namespace GreenAPI
             }
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenAPI v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GreenStock API v1"));
 
             app.UseHttpsRedirection();
 

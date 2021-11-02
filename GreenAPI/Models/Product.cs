@@ -10,7 +10,6 @@ namespace GreenAPI.Models
         public long ProductId { get; set; }
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
-        [JsonIgnore]
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Size { get; set; }

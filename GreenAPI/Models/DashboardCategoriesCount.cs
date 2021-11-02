@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace GreenAPI.Models.ViewModels
 {
-    public class DashboardCategoriesCountViewModel
+    public class DashboardCategoriesCount
     {
         public string Category { get; set; }
         public int SustainableItemsCount { get; set; }

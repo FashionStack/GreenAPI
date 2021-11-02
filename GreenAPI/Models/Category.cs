@@ -6,10 +6,8 @@ namespace GreenAPI.Models
 {
     public class Category
     {
-        [JsonIgnore]
         public int CategoryId { get; set; }
         public string Name { get; set; }
-        public char SizeType { get; set; }
         public bool Status { get; set; }
     }
 }

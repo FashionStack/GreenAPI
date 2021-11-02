@@ -22,8 +22,7 @@ namespace GreenAPI.Models.Validators
                 .MaximumLength(50);
             RuleFor(p => p.Amount).NotNull().NotEmpty().WithMessage(ValidationMessages.FieldIsRequired);
             RuleFor(p => p.Sustainable).NotNull().NotEmpty().WithMessage(ValidationMessages.FieldIsRequired);
-            RuleFor(p => p.ImageUrl).NotNull().NotEmpty().WithMessage(ValidationMessages.FieldIsRequired)
-                .MaximumLength(255);
+            RuleFor(p => p.ImageUrl).MaximumLength(255);
         }
     }
 }

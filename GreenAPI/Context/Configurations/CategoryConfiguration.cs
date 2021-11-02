@@ -20,7 +20,6 @@ namespace GreenAPI.Context.Configurations
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.Property(c => c.Name).HasMaxLength(50).IsRequired();
-            builder.Property(c => c.SizeType).IsRequired();
             builder.Property(c => c.Status).IsRequired();
         }
     }
