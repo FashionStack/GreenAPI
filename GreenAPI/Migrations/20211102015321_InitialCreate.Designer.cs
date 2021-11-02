@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GreenAPI.Migrations
 {
     [DbContext(typeof(GreenStockContext))]
-    [Migration("20211031020646_initial")]
-    partial class initial
+    [Migration("20211102015321_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,10 +28,6 @@ namespace GreenAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("varchar(50)");
-
-                    b.Property<string>("SizeType")
-                        .IsRequired()
-                        .HasColumnType("varchar(1)");
 
                     b.Property<bool>("Status")
                         .HasColumnType("tinyint(1)");
