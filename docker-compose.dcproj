@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>eb2a20e7-d632-4fc2-a7c4-c4f938db875c</ProjectGuid>
+    <ProjectGuid>4e745d49-97fc-4d9e-a6c6-73d2efabab06</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
     <DockerServiceName>greenapi</DockerServiceName>

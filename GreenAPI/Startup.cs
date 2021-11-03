@@ -23,6 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using GreenAPI.Services;
 
 namespace GreenAPI
 {
@@ -100,6 +101,8 @@ namespace GreenAPI
             {
                 endpoints.MapControllers();
             });
+
+            DatabaseManagementService.MigrationInitialization(app);
         }
     }
 }

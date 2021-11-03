@@ -171,7 +171,7 @@ namespace GreenAPI.Controllers
             if (product != null)
             {
                 //Valida se o valor é negativo e se há a quantidade necessária em estoque para retirada
-                if (value.Amount < 0 && value.Amount < product.Amount)
+                if (value.Amount < 0 && Math.Abs(value.Amount) > product.Amount)
                 {
                     return BadRequest(new Error
                     {
@@ -219,6 +219,7 @@ namespace GreenAPI.Controllers
 
             try
             {
+                //Busca totalizadores do dashboard
                 var dashboard = new Dashboard()
                 {
                     ProductsCount = products.Count,
@@ -228,8 +229,11 @@ namespace GreenAPI.Controllers
                 };
 
                 var categories = new List<DashboardCategoriesCount>();
+                
+                //Agrupa os dados por categoria
                 var groupby = products.GroupBy(i => new { i.CategoryId, i.Category.Name }).Select(i => new { CategoryId = i.Key.CategoryId, Name = i.Key.Name }).ToList();
 
+                //Percorre as categorias e seta seus totalizadores
                 foreach (var item in groupby)
                 {
                     DashboardCategoriesCount category = new DashboardCategoriesCount()
@@ -242,6 +246,7 @@ namespace GreenAPI.Controllers
                     categories.Add(category);
                 }
 
+                //Adiciona a lista de categorias no objeto de retorno
                 dashboard.Categories = categories.OrderByDescending(i => i.SustainableItemsCount).ThenBy(i => i.NonSustainableItemsCount).Take(5).ToList(); ;
 
                 return dashboard;
